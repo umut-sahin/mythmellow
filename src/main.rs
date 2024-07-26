@@ -1,44 +1,55 @@
-// Disable spawning command prompt on Windows in release mode.
+// Disable spawning command prompt on Windows outside development mode.
 #![cfg_attr(not(feature = "development"), windows_subsystem = "windows")]
 
-use {
-    mythmallow_enemies_sweet::prelude::*,
-    mythmallow_game::prelude::*,
-    mythmallow_items_greek::prelude::*,
-    mythmallow_mode_survival::prelude::*,
-    mythmallow_perks_basic::prelude::*,
-    mythmallow_players_greek::prelude::*,
+use mythmallow::{
+    content::{
+        enemies::sweet::prelude::*,
+        items::greek::prelude::*,
+        modes::survival::prelude::*,
+        players::greek::prelude::*,
+    },
+    core::{
+        dependencies::*,
+        plugins::*,
+        registries::all::*,
+    },
 };
 
-fn main() {
-    #[cfg(feature = "wasm")]
+fn main() -> AppExit {
+    #[cfg(target_family = "wasm")]
     {
-        // Enable stack traces for panics in WebAssembly.
+        // Enable stack traces for panics in web builds.
         console_error_panic_hook::set_once();
     }
 
-    // Create the application with the log plugin.
+    // Create the application.
     let mut app = App::new();
-    app.add_plugins(LogPlugin::default());
 
-    // Parse the arguments and initialize the application.
-    let args = Args::parse();
-    initialize(&mut app, &args);
-
-    // Register and insert arguments.
-    app.register_type::<Args>();
-    app.insert_resource(args);
+    // Add default plugins.
+    app.add_plugins(
+        DefaultPlugins
+            .set(WindowPlugin {
+                primary_window: Some(Window {
+                    title: "Mythmallow".to_owned(),
+                    fit_canvas_to_parent: true,
+                    ..default()
+                }),
+                ..default()
+            })
+            .build(),
+    );
 
     // Add diagnostics plugins.
     app.add_plugins(FrameTimeDiagnosticsPlugin);
     app.add_plugins(EntityCountDiagnosticsPlugin);
 
+    // Enable the editor in development mode.
     #[cfg(feature = "development")]
     {
-        // Add editor plugin in development mode.
+        // Add editor plugin.
         app.add_plugins(EditorPlugin::default());
 
-        // Define editor controls.
+        // Overwrite editor controls.
         let mut editor_controls = EditorControls::default_bindings();
         editor_controls.unbind(EditorAction::PlayPauseEditor);
         editor_controls.insert(
@@ -54,11 +65,53 @@ fn main() {
         app.insert_resource(editor_controls);
     }
 
-    // Add the main plugin.
-    app.add_plugins(MythmallowPlugin);
+    // Add core plugins.
+    core(&mut app);
 
-    // Add game mode plugins.
-    app.add_plugins(SurvivalModePlugin);
+    // Make the primary window persistent in native builds.
+    #[cfg(not(target_family = "wasm"))]
+    {
+        // Use core resources.
+        use mythmallow::core::resources::all::*;
+
+        // Find the primary window entity.
+        let primary_window_entity = app
+            .world_mut()
+            .query_filtered::<Entity, With<PrimaryWindow>>()
+            .get_single(app.world())
+            .expect("fatal: unable to find the primary window entity");
+
+        // Determine the persistent primary window state path.
+        let arguments = app.world().resource::<Arguments>();
+        let state_path = arguments.data_directory.join("state").join("window.toml");
+
+        // Make the primary window persistent.
+        app.world_mut().entity_mut(primary_window_entity).insert((
+            Name::new("Primary Window"),
+            PersistentWindowBundle {
+                window: Window { title: "Mythmallow".to_owned(), ..Default::default() },
+                state: Persistent::<WindowState>::builder()
+                    .name("primary window state")
+                    .format(StorageFormat::Toml)
+                    .path(state_path)
+                    .default(WindowState::borderless_fullscreen())
+                    .revertible(true)
+                    .revert_to_default_on_deserialization_errors(true)
+                    .build()
+                    .unwrap_or_else(|_| {
+                        panic!("fatal: unable to initialize persistent primary window state")
+                    }),
+            },
+        ));
+
+        // Add persistent windows plugin.
+        app.add_plugins(PersistentWindowsPlugin);
+    }
+
+    // Add content plugins.
+    content(&mut app);
+
+    // Log registry statistics.
     {
         let game_mode_registry = app.world().resource::<GameModeRegistry>();
         let number_of_game_modes = game_mode_registry.number_of_game_modes();
@@ -69,22 +122,6 @@ fn main() {
             if number_of_game_modes == 1 { "is" } else { "are" },
         );
     }
-
-    // Add item plugins.
-    app.add_plugins(GreekItemsPlugin);
-    {
-        let item_registry = app.world().resource::<ItemRegistry>();
-        let number_of_items = item_registry.number_of_items();
-        log::info!(
-            "{} item{} {} registered",
-            number_of_items,
-            if number_of_items == 1 { "" } else { "s" },
-            if number_of_items == 1 { "is" } else { "are" },
-        );
-    }
-
-    // Add player plugins.
-    app.add_plugins(GreekPlayersPlugin);
     {
         let player_registry = app.world_mut().resource::<PlayerRegistry>();
         let number_of_mythologies = player_registry.number_of_mythologies();
@@ -98,9 +135,6 @@ fn main() {
             if number_of_mythologies == 1 { "y" } else { "ies" },
         );
     }
-
-    // Add enemy plugins.
-    app.add_plugins(SweetEnemiesPlugin);
     {
         let enemy_registry = app.world().resource::<EnemyRegistry>();
         let number_of_enemy_packs = enemy_registry.number_of_packs();
@@ -114,87 +148,48 @@ fn main() {
             if number_of_enemy_packs == 1 { "" } else { "s" },
         );
     }
-
-    // Add perk plugins.
-    app.add_plugins(BasicPerksPlugin);
     {
-        let perk_registry = app.world().resource::<PerkRegistry>();
-        let number_of_perks = perk_registry.number_of_perks();
+        let item_registry = app.world().resource::<ItemRegistry>();
+        let number_of_items = item_registry.number_of_items();
         log::info!(
-            "{} perk{} {} registered",
-            number_of_perks,
-            if number_of_perks == 1 { "" } else { "s" },
-            if number_of_perks == 1 { "is" } else { "are" },
+            "{} item{} {} registered",
+            number_of_items,
+            if number_of_items == 1 { "" } else { "s" },
+            if number_of_items == 1 { "is" } else { "are" },
         );
     }
 
     // Start the application.
     log::info!("starting the application");
-    app.run();
+    app.run()
 }
 
-#[cfg(feature = "native")]
-fn initialize(app: &mut App, args: &Args) {
-    // Add default plugins without a window.
-    app.add_plugins(
-        DefaultPlugins
-            .set(WindowPlugin {
-                primary_window: None,
-                exit_condition: ExitCondition::OnPrimaryClosed,
-                close_when_requested: true,
-            })
-            .build()
-            .disable::<LogPlugin>(),
-    );
-
-    // Spawn persistent primary window.
-    app.world_mut().spawn((
-        Name::new("Primary Window"),
-        PrimaryWindow,
-        PersistentWindowBundle {
-            window: Window { title: "Mythmallow".to_owned(), ..Default::default() },
-            state: Persistent::<WindowState>::builder()
-                .name("window state")
-                .format(StorageFormat::Toml)
-                .path(args.data_directory.join("state").join("window.toml"))
-                .default(WindowState::borderless_fullscreen())
-                .revertible(true)
-                .revert_to_default_on_deserialization_errors(true)
-                .build()
-                .unwrap_or_else(|_| panic!("fatal: unable to initialize persistent window state")),
-        },
-    ));
-
-    // Add persistent windows plugin.
-    app.add_plugins(PersistentWindowsPlugin);
-
-    #[cfg(feature = "development")]
-    {
-        // Setup exiting the application with CTRL+Q in development mode.
-        fn exit_with_ctrl_q(
-            keyboard_input: Res<ButtonInput<KeyCode>>,
-            mut app_exit_events: ResMut<Events<AppExit>>,
-        ) {
-            if keyboard_input.pressed(KeyCode::ControlLeft)
-                && keyboard_input.just_pressed(KeyCode::KeyQ)
-            {
-                app_exit_events.send(AppExit::Success);
-            }
-        }
-        app.add_systems(Update, exit_with_ctrl_q);
-    }
+fn core(app: &mut App) {
+    app.add_plugins(ConfigurationPlugin);
+    app.add_plugins(LocalizationPlugin);
+    app.add_plugins(UtilityPlugin);
+    app.add_plugins(ConsolePlugin);
+    app.add_plugins(StatePlugin);
+    app.add_plugins(SetPlugin);
+    app.add_plugins(CameraPlugin);
+    app.add_plugins(ActionPlugin);
+    app.add_plugins(PropertyPlugin);
+    app.add_plugins(LevelingPlugin);
+    app.add_plugins(PhysicsPlugin);
+    app.add_plugins(MapPlugin);
+    app.add_plugins(MovementPlugin);
+    app.add_plugins(CombatPlugin);
+    app.add_plugins(ModePlugin);
+    app.add_plugins(ItemPlugin);
+    app.add_plugins(InventoryPlugin);
+    app.add_plugins(PlayerPlugin);
+    app.add_plugins(EnemyPlugin);
+    app.add_plugins(UiPlugin);
 }
 
-#[cfg(feature = "wasm")]
-fn initialize(app: &mut App, _args: &Args) {
-    // Add default plugins.
-    app.add_plugins(
-        DefaultPlugins
-            .set(WindowPlugin {
-                primary_window: Some(Window { fit_canvas_to_parent: true, ..default() }),
-                ..default()
-            })
-            .build()
-            .disable::<LogPlugin>(),
-    );
+fn content(app: &mut App) {
+    app.add_plugins(SurvivalModePlugin);
+    app.add_plugins(GreekItemsPlugin);
+    app.add_plugins(GreekPlayersPlugin);
+    app.add_plugins(SweetEnemiesPlugin);
 }

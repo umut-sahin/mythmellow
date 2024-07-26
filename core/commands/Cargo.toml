@@ -1,0 +1,21 @@
+[package]
+name = "mythmallow-core-commands"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+mythmallow-core-components = { path = "../components" }
+mythmallow-core-dependencies = { path = "../dependencies" }
+mythmallow-core-events = { path = "../events" }
+mythmallow-core-systems = { path = "../systems" }
+
+[features]
+development = [
+    "mythmallow-core-components/development",
+    "mythmallow-core-dependencies/development",
+    "mythmallow-core-events/development",
+    "mythmallow-core-systems/development",
+]
+
+[lints]
+workspace = true

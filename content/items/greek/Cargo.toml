@@ -1,0 +1,31 @@
+[package]
+name = "mythmallow-items-greek"
+version = "0.0.0"
+edition = "2021"
+
+[dependencies]
+mythmallow-core-bundles = { path = "../../../core/bundles" }
+mythmallow-core-components = { path = "../../../core/components" }
+mythmallow-core-constants = { path = "../../../core/constants" }
+mythmallow-core-dependencies = { path = "../../../core/dependencies" }
+mythmallow-core-interfaces = { path = "../../../core/interfaces" }
+mythmallow-core-registries = { path = "../../../core/registries" }
+mythmallow-core-resources = { path = "../../../core/resources" }
+mythmallow-core-sets = { path = "../../../core/sets" }
+mythmallow-core-systems = { path = "../../../core/systems" }
+
+[features]
+development = [
+    "mythmallow-core-bundles/development",
+    "mythmallow-core-components/development",
+    "mythmallow-core-constants/development",
+    "mythmallow-core-dependencies/development",
+    "mythmallow-core-interfaces/development",
+    "mythmallow-core-registries/development",
+    "mythmallow-core-resources/development",
+    "mythmallow-core-sets/development",
+    "mythmallow-core-systems/development",
+]
+
+[lints]
+workspace = true

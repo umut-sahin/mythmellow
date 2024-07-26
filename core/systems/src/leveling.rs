@@ -1,0 +1,245 @@
+//! Leveling systems.
+
+use {
+    mythmallow_core_components::all::*,
+    mythmallow_core_dependencies::*,
+    mythmallow_core_events::all::*,
+    mythmallow_core_interfaces::*,
+    mythmallow_core_registries::all::*,
+    mythmallow_core_resources::all::*,
+};
+
+
+/// Initializes the player level structure.
+pub fn initialize_player_level_structure(world: &mut World) {
+    let game_mode_registry = world.resource::<GameModeRegistry>();
+    let game_mode_index = world.resource::<GameModeIndex>();
+    let game_mode = &game_mode_registry[game_mode_index.0];
+
+    let player_level_structure = game_mode.player_level_structure();
+
+    let mut specified_level = Level::default();
+    let mut specified_experience = Experience::default();
+
+    static FIRST_RUN: AtomicBool = AtomicBool::new(true);
+    if FIRST_RUN.load(AtomicOrdering::SeqCst) {
+        FIRST_RUN.store(false, AtomicOrdering::SeqCst);
+        let arguments = world.resource::<Arguments>();
+        if let Some(level) = arguments.start_in_game_level {
+            specified_level = Level(level);
+        }
+        if let Some(experience) = arguments.start_in_game_experience {
+            specified_experience = Experience(experience);
+        }
+    }
+
+    let max_level = player_level_structure.max_level.unwrap_or(Level(NonZeroU16::MAX));
+    if specified_level.0 > max_level.0 {
+        specified_level = max_level;
+    }
+
+    let experience_required_to_get_to_current_level = if specified_level.get() == 1 {
+        Experience(0.00)
+    } else {
+        (player_level_structure.required_experience_calculator)(
+            world,
+            Level(NonZeroU16::new(specified_level.get() - 1).unwrap()),
+        )
+    };
+    let mut experience_required_to_level_up = if specified_level.0 != max_level.0 {
+        (player_level_structure.required_experience_calculator)(world, specified_level)
+    } else {
+        Experience(f64::INFINITY)
+    };
+
+    let mut set_level = specified_level;
+    let set_experience =
+        Experience(specified_experience.max(*experience_required_to_get_to_current_level));
+
+    while set_level.0 < max_level.0 && set_experience.0 >= experience_required_to_level_up.0 {
+        set_level = Level(set_level.0.checked_add(1).unwrap());
+        experience_required_to_level_up = if set_level.0 != max_level.0 {
+            (player_level_structure.required_experience_calculator)(world, set_level)
+        } else {
+            Experience(f64::INFINITY)
+        };
+    }
+
+    let (mut player_level, mut player_experience) = world
+        .query_filtered::<(&mut Level, &mut Experience), With<Player>>()
+        .get_single_mut(world)
+        .unwrap();
+
+    *player_level = set_level;
+    *player_experience = set_experience;
+
+    log::info!("player is level {} with {} experience", set_level.0, set_experience);
+    log::info!("requiring {} experience for the next level", experience_required_to_level_up);
+
+    world.insert_resource(ExperienceRequiredToGetToCurrentLevel(
+        experience_required_to_get_to_current_level,
+    ));
+    world.insert_resource(ExperienceRequiredToLevelUp(experience_required_to_level_up));
+
+    world.insert_resource(player_level_structure);
+
+    let player_entity = world.query_filtered::<Entity, With<Player>>().single(world);
+    let mut leveled_up_events = world.resource_mut::<Events<LeveledUpEvent>>();
+    for player_new_level in 2..=set_level.get() {
+        leveled_up_events.send(LeveledUpEvent {
+            entity: player_entity,
+            new_level: Level(NonZeroU16::new(player_new_level).unwrap()),
+        });
+    }
+}
+
+
+/// Gains experience for the player.
+pub fn gain_player_experience(
+    mut player_query: Query<&mut Experience, With<Player>>,
+    mut experience_gained_event_reader: EventReader<ExperienceGainedEvent>,
+) {
+    for experience_changed_event in experience_gained_event_reader.read() {
+        if let Ok(mut player_experience) = player_query.get_mut(experience_changed_event.entity) {
+            **player_experience += *experience_changed_event.experience;
+            log::info!(
+                "player gained {} experience by {}",
+                experience_changed_event.experience,
+                experience_changed_event.by,
+            );
+        }
+    }
+}
+
+/// Levels up the player.
+pub fn level_player_up(world: &mut World) {
+    loop {
+        let mut system_state: SystemState<(
+            Query<(Entity, &Experience, &mut Level), With<Player>>,
+            Res<ExperienceRequiredToLevelUp>,
+            Res<PlayerLevelStructure>,
+            EventWriter<LeveledUpEvent>,
+        )> = SystemState::new(world);
+
+        let (
+            mut player_query,
+            experience_required_to_level_up,
+            player_level_structure,
+            mut leveled_up_event_writer,
+        ) = system_state.get_mut(world);
+
+        if let Ok((player_entity, player_experience, mut player_level)) =
+            player_query.get_single_mut()
+        {
+            log::info!("trying to level up the player");
+
+            if player_experience.0 < *experience_required_to_level_up.0 {
+                log::info!(
+                    "player required {} experience to level up but has {} experience",
+                    experience_required_to_level_up.0,
+                    player_experience,
+                );
+                break;
+            }
+
+            let max_level = player_level_structure.max_level.unwrap_or(Level::new(u16::MAX));
+            if player_level.0 >= max_level.0 {
+                return;
+            }
+
+            log::info!(
+                "player required {} experience to level up and has {} experience",
+                experience_required_to_level_up.0,
+                player_experience,
+            );
+
+            let new_player_level = Level(player_level.checked_add(1).unwrap());
+            log::info!("player leveled up to level {}", new_player_level.get());
+
+            *player_level = new_player_level;
+            leveled_up_event_writer
+                .send(LeveledUpEvent { entity: player_entity, new_level: new_player_level });
+
+            let new_experience_required_to_get_to_current_level =
+                ExperienceRequiredToGetToCurrentLevel(experience_required_to_level_up.0);
+
+            let new_experience_required_to_level_up = if new_player_level.0 != max_level.0 {
+                (player_level_structure.required_experience_calculator)(world, new_player_level)
+            } else {
+                Experience(f64::INFINITY)
+            };
+
+            log::info!(
+                "requiring {} experience for the next level",
+                new_experience_required_to_level_up.0,
+            );
+
+            world.insert_resource(new_experience_required_to_get_to_current_level);
+            world.insert_resource(ExperienceRequiredToLevelUp(new_experience_required_to_level_up));
+        }
+    }
+}
+
+
+/// Sets the level of the player.
+pub fn set_level(In(mut level): In<Level>, world: &mut World) {
+    let player_level_structure = world.resource::<PlayerLevelStructure>().clone();
+
+    let max_level = player_level_structure.max_level.unwrap_or(Level(NonZeroU16::MAX));
+    if level.0 > max_level.0 {
+        level = max_level;
+    }
+
+    let experience_required_to_get_to_current_level = if level.get() == 1 {
+        Experience(0.00)
+    } else {
+        (player_level_structure.required_experience_calculator)(
+            world,
+            Level(NonZeroU16::new(level.get() - 1).unwrap()),
+        )
+    };
+    let experience_required_to_level_up = if level.0 != max_level.0 {
+        (player_level_structure.required_experience_calculator)(world, level)
+    } else {
+        Experience(f64::INFINITY)
+    };
+
+    let (mut player_level, mut player_experience) = world
+        .query_filtered::<(&mut Level, &mut Experience), With<Player>>()
+        .get_single_mut(world)
+        .unwrap();
+    let old_level = *player_level;
+
+    *player_level = level;
+    *player_experience = experience_required_to_get_to_current_level;
+
+    log::info!("setting player to level {}", player_level.get());
+    log::info!("setting player experience to {}", *player_experience);
+    log::info!("requiring {} experience for the next level", experience_required_to_level_up);
+
+    world.insert_resource(ExperienceRequiredToGetToCurrentLevel(
+        experience_required_to_get_to_current_level,
+    ));
+    world.insert_resource(ExperienceRequiredToLevelUp(experience_required_to_level_up));
+
+    if level.0 > old_level.0 {
+        let player_entity = world.query_filtered::<Entity, With<Player>>().single(world);
+        let mut leveled_up_events = world.resource_mut::<Events<LeveledUpEvent>>();
+
+        let number_of_level_ups = level.get() - old_level.get();
+        for i in 1..=number_of_level_ups {
+            leveled_up_events.send(LeveledUpEvent {
+                entity: player_entity,
+                new_level: Level(old_level.checked_add(i).unwrap()),
+            });
+        }
+    }
+}
+
+
+/// Deinitializes the player level structure.
+pub fn deinitialize_player_level_structure(mut commands: Commands) {
+    commands.remove_resource::<ExperienceRequiredToGetToCurrentLevel>();
+    commands.remove_resource::<ExperienceRequiredToLevelUp>();
+    commands.remove_resource::<PlayerLevelStructure>();
+}

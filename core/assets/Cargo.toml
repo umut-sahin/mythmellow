@@ -1,0 +1,16 @@
+[package]
+name = "mythmallow-core-assets"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+mythmallow-core-dependencies = { path = "../dependencies" }
+serde = { version = "1.0", features = ["derive"] }
+
+[features]
+development = [
+    "mythmallow-core-dependencies/development",
+]
+
+[lints]
+workspace = true

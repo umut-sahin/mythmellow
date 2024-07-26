@@ -1,0 +1,39 @@
+[package]
+name = "mythmallow-core-plugins"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+mythmallow-core-actions = { path = "../actions" }
+mythmallow-core-assets = { path = "../assets" }
+mythmallow-core-commands = { path = "../commands" }
+mythmallow-core-components = { path = "../components" }
+mythmallow-core-constants = { path = "../constants" }
+mythmallow-core-dependencies = { path = "../dependencies" }
+mythmallow-core-events = { path = "../events" }
+mythmallow-core-interfaces = { path = "../interfaces" }
+mythmallow-core-registries = { path = "../registries" }
+mythmallow-core-resources = { path = "../resources" }
+mythmallow-core-sets = { path = "../sets" }
+mythmallow-core-states = { path = "../states" }
+mythmallow-core-systems = { path = "../systems" }
+
+[features]
+development = [
+    "mythmallow-core-actions/development",
+    "mythmallow-core-assets/development",
+    "mythmallow-core-commands/development",
+    "mythmallow-core-components/development",
+    "mythmallow-core-constants/development",
+    "mythmallow-core-dependencies/development",
+    "mythmallow-core-events/development",
+    "mythmallow-core-interfaces/development",
+    "mythmallow-core-registries/development",
+    "mythmallow-core-resources/development",
+    "mythmallow-core-sets/development",
+    "mythmallow-core-states/development",
+    "mythmallow-core-systems/development",
+]
+
+[lints]
+workspace = true

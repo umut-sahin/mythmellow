@@ -1,0 +1,17 @@
+[package]
+name = "mythmallow-core-registries"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+mythmallow-core-dependencies = { path = "../dependencies" }
+mythmallow-core-interfaces = { path = "../interfaces" }
+
+[features]
+development = [
+    "mythmallow-core-dependencies/development",
+    "mythmallow-core-interfaces/development",
+]
+
+[lints]
+workspace = true
