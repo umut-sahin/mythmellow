@@ -12,16 +12,14 @@ pub enum Depth {
 
     /// Depth of the map.
     Map,
-
+    /// Depth of the experience points.
+    ExperiencePoint,
     /// Depth of the enemies.
     Enemy,
-
     /// Depth of the player.
     Player,
-
     /// Depth of the items.
     Item,
-
     /// Depth of the projectiles.
     Projectile,
 

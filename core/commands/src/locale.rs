@@ -3,7 +3,6 @@ use {
     mythmallow_core_systems::utility::*,
 };
 
-
 /// Controls the locale of the application.
 #[derive(ConsoleCommand, Parser)]
 #[command(name = "locale")]
@@ -46,7 +45,6 @@ impl LocaleCommand {
         }
     }
 }
-
 
 /// Locale subcommands.
 #[derive(Debug, Subcommand)]

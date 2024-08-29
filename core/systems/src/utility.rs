@@ -3,6 +3,7 @@
 use {
     mythmallow_core_components::all::*,
     mythmallow_core_dependencies::*,
+    mythmallow_core_resources::all::*,
 };
 
 
@@ -155,6 +156,16 @@ pub fn console_is_not_open(console_state: Res<ConsoleState>) -> bool {
     !console_state.open
 }
 
+/// Run condition for god mode being enabled.
+pub fn god_mode_is_enabled(god_mode: Res<GodMode>) -> bool {
+    god_mode.is_enabled
+}
+
+/// Run condition for god mode being disabled.
+pub fn god_mode_is_disabled(god_mode: Res<GodMode>) -> bool {
+    !god_mode.is_enabled
+}
+
 
 /// System to remove a resource.
 pub fn remove_resource<R: Resource>(mut commands: Commands) {
@@ -233,4 +244,26 @@ pub fn find_enemies_in_range_sorted_by_distance(
     });
 
     enemies_in_range
+}
+
+
+/// Quits the application.
+#[cfg(not(target_family = "wasm"))]
+pub fn quit(app_exit_event_writer: &mut EventWriter<AppExit>) {
+    app_exit_event_writer.send(AppExit::Success);
+}
+
+/// Quits the application.
+#[cfg(target_family = "wasm")]
+pub fn quit(_app_exit_event_writer: &mut EventWriter<AppExit>) {
+    let window = match web_sys::window() {
+        Some(window) => window,
+        None => {
+            log::error!("unable to get the window to close");
+            return;
+        },
+    };
+    if let Err(error) = window.close() {
+        log::error!("unable to close the window ({:?})", error);
+    }
 }

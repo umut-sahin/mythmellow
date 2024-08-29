@@ -38,6 +38,7 @@ impl<P: IPlayer + Component> PlayerBundle<P> {
         let dash_speed_multiplier = self.player.dash_speed_multiplier();
         let dodge_chance = self.player.dodge_chance();
         let health = self.player.health();
+        let pickup_range = self.player.pickup_range();
         let speed = self.player.speed();
         let speed_multiplier = self.player.speed_multiplier();
 
@@ -54,11 +55,10 @@ impl<P: IPlayer + Component> PlayerBundle<P> {
             health,
             speed,
             speed_multiplier,
+            RemainingHealth(health.0),
             // Leveling
             Level::default(),
             Experience::default(),
-            // Combat
-            RemainingHealth(health.0),
             // Physics
             (
                 RigidBody::Dynamic,
@@ -74,6 +74,7 @@ impl<P: IPlayer + Component> PlayerBundle<P> {
 
         player.with_children(|parent| {
             parent.spawn(PlayerHitBox::bundle(collider));
+            parent.spawn(PlayerPickupArea::bundle(Collider::circle(*pickup_range)));
         });
 
         player

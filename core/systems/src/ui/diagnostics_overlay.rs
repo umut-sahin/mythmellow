@@ -133,22 +133,6 @@ pub fn spawn_diagnostics_overlay(
     general_settings.persist().ok();
 }
 
-/// Despawns the diagnostics overlay.
-pub fn despawn_diagnostics_overlay(
-    mut commands: Commands,
-    query: Query<Entity, With<DiagnosticsOverlayText>>,
-    mut general_settings: ResMut<Persistent<GeneralSettings>>,
-) {
-    if let Ok(entity) = query.get_single() {
-        commands.entity(entity).despawn_recursive();
-    }
-
-    log::info!("despawning the diagnostics overlay");
-
-    general_settings.show_diagnostics_overlay = false;
-    general_settings.persist().ok();
-}
-
 
 /// Updates the diagnostics overlay.
 pub fn update_diagnostics_overlay(
@@ -183,4 +167,21 @@ pub fn update_diagnostics_overlay(
     text.sections[1].value = entity_count;
     text.sections[3].value = fps;
     text.sections[5].value = frame_time;
+}
+
+
+/// Despawns the diagnostics overlay.
+pub fn despawn_diagnostics_overlay(
+    mut commands: Commands,
+    query: Query<Entity, With<DiagnosticsOverlayText>>,
+    mut general_settings: ResMut<Persistent<GeneralSettings>>,
+) {
+    if let Ok(entity) = query.get_single() {
+        commands.entity(entity).despawn_recursive();
+    }
+
+    log::info!("despawning the diagnostics overlay");
+
+    general_settings.show_diagnostics_overlay = false;
+    general_settings.persist().ok();
 }

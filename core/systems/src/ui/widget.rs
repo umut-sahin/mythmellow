@@ -360,6 +360,20 @@ pub fn remove_widget_selected_from_widgets_which_are_not_selected(
 }
 
 
+/// Adds widget clicked component when a widget is clicked.
+pub fn add_widget_clicked_on_click(
+    mut commands: Commands,
+    mut widget_query: Query<(Entity, &mut Widget), Changed<Widget>>,
+) {
+    for (entity, mut widget) in widget_query.iter_mut() {
+        widget.on_click(|| {
+            commands.entity(entity).insert(WidgetClicked);
+        });
+        break;
+    }
+}
+
+
 /// Updates the widget state on user interactions.
 pub fn update_widget_state_on_user_interactions(
     mut commands: Commands,

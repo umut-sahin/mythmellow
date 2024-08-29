@@ -62,6 +62,7 @@ impl Plugin for WidgetPlugin {
                 set_is_selected_when_widget_selected_component_is_added,
                 ensure_single_widget_is_selected,
                 remove_widget_selected_from_widgets_which_are_not_selected,
+                add_widget_clicked_on_click,
                 update_widget_state_on_user_interactions,
                 update_button_colors_on_state_change,
             )

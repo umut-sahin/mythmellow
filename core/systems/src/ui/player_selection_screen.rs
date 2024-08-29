@@ -25,7 +25,7 @@ pub fn spawn_player_selection_screen(
             if player_registry.is_empty() {
                 // Spawn no players title.
                 column.menu_title(
-                    localization::menu_title_no_players(),
+                    localization::no_players_menu_title(),
                     &localization,
                     ui_font.clone(),
                 );
@@ -44,6 +44,7 @@ pub fn spawn_player_selection_screen(
                         if mythology_index == 0 && player_index == 0 {
                             player_button.insert(WidgetSelected::now());
                         }
+                        player_button.entity_commands().observe(on_player_button_clicked);
                     }
                 }
             }
@@ -55,14 +56,15 @@ pub fn spawn_player_selection_screen(
                     localization.deref(),
                     ui_font.clone(),
                 );
-                back_button.named("Back Button").insert(PlayerSelectionScreenBackButton);
+                back_button.named("Back Button");
                 if player_registry.is_empty() {
                     back_button.insert(WidgetSelected::now());
                 }
+                back_button.entity_commands().observe(on_back_button_clicked);
             }
         })
         .named("Player Selection Screen")
-        .insert((PlayerSelectionScreen, StateScoped(AppState::PlayerSelectionScreen)))
+        .insert(StateScoped(AppState::PlayerSelectionScreen))
         .style()
         .width(Val::Percent(100.00))
         .height(Val::Percent(100.00))
@@ -73,49 +75,45 @@ pub fn spawn_player_selection_screen(
 
 
 /// Transitions to the enemy selection screen.
-pub fn player_button_interaction(
+pub fn on_player_button_clicked(
+    trigger: Trigger<OnAdd, WidgetClicked>,
     mut commands: Commands,
-    mut player_button_query: Query<
-        (&mut Widget, &PlayerSelectionScreenPlayerButton),
-        Changed<Widget>,
-    >,
+    player_button_query: Query<&PlayerSelectionScreenPlayerButton>,
     player_registry: Res<PlayerRegistry>,
     mut next_app_state: ResMut<NextState<AppState>>,
     registered_systems: Res<RegisteredSystems>,
 ) {
-    if let Ok((mut button, metadata)) = player_button_query.get_single_mut() {
-        button.on_click(|| {
-            log::info!(
-                "{:?} player button is clicked",
-                player_registry[metadata.mythology_index].players[metadata.player_index].id(),
-            );
-            log::info!("transitioning to the enemy selection screen");
+    commands.entity(trigger.entity()).remove::<WidgetClicked>();
 
-            commands.insert_resource(MythologyIndex(metadata.mythology_index));
-            commands.insert_resource(PlayerIndex(metadata.player_index));
+    let button = match player_button_query.get(trigger.entity()) {
+        Ok(query_result) => query_result,
+        Err(_) => return,
+    };
 
-            commands.run_system(registered_systems.widget.save_selected_widget);
-            next_app_state.set(AppState::EnemySelectionScreen);
-        });
-    }
+    log::info!(
+        "{:?} player button is clicked",
+        player_registry[button.mythology_index].players[button.player_index].id(),
+    );
+    log::info!("transitioning to the enemy selection screen");
+
+    commands.insert_resource(MythologyIndex(button.mythology_index));
+    commands.insert_resource(PlayerIndex(button.player_index));
+
+    commands.run_system(registered_systems.widget.save_selected_widget);
+    next_app_state.set(AppState::EnemySelectionScreen);
 }
 
 /// Transitions to the game mode selection screen.
-pub fn back_button_interaction(
+pub fn on_back_button_clicked(
+    trigger: Trigger<OnAdd, WidgetClicked>,
     mut commands: Commands,
-    mut back_button_query: Query<
-        &mut Widget,
-        (Changed<Widget>, With<PlayerSelectionScreenBackButton>),
-    >,
     mut next_app_state: ResMut<NextState<AppState>>,
 ) {
-    if let Ok(mut button) = back_button_query.get_single_mut() {
-        button.on_click(|| {
-            log::info!("back button is clicked");
-            log::info!("transitioning to the game mode selection screen");
+    commands.entity(trigger.entity()).remove::<WidgetClicked>();
 
-            commands.insert_resource(RestorePreviouslySelectedWidget);
-            next_app_state.set(AppState::GameModeSelectionScreen);
-        });
-    }
+    log::info!("back button is clicked");
+    log::info!("transitioning to the game mode selection screen");
+
+    commands.insert_resource(RestorePreviouslySelectedWidget);
+    next_app_state.set(AppState::GameModeSelectionScreen);
 }

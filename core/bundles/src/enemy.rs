@@ -38,6 +38,10 @@ impl<E: IEnemy + Component> EnemyBundle<E> {
         let health = self.enemy.health();
         let speed = AttractionSpeed::Constant(self.enemy.speed());
 
+        let experience_reward = self.enemy.experience_reward();
+        let experience_point_visuals = self.enemy.experience_point_visuals();
+        let experience_point_attraction_speed = self.enemy.experience_point_attraction_speed();
+
         let mut collision_groups = LayerMask::from([Layer::Enemy]);
         let mut collision_masks = LayerMask::from([Layer::MapBound, Layer::Enemy]);
 
@@ -56,8 +60,11 @@ impl<E: IEnemy + Component> EnemyBundle<E> {
             self,
             health,
             speed,
-            // Combat
             RemainingHealth(health.0),
+            // Leveling
+            experience_reward,
+            experience_point_visuals,
+            experience_point_attraction_speed,
             // Physics
             (
                 RigidBody::Dynamic,

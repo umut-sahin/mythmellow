@@ -17,7 +17,9 @@ pub struct PlayerPlugin;
 impl Plugin for PlayerPlugin {
     fn build(&self, app: &mut App) {
         // Register resources.
+        app.register_type::<MythologyIndex>();
         app.register_type::<PlayerIndex>();
+        app.register_type::<GodMode>();
 
         // Register components.
         app.register_type::<Player>();
@@ -25,6 +27,10 @@ impl Plugin for PlayerPlugin {
 
         // Initialize registry.
         app.init_resource::<PlayerRegistry>();
+
+        // Insert resources.
+        let arguments = app.world().resource::<Arguments>();
+        app.insert_resource(GodMode { is_enabled: arguments.enable_god_mode });
 
         // Add systems.
         app.add_systems(

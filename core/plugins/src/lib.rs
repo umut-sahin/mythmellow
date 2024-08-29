@@ -43,6 +43,7 @@ pub use crate::{
     ui::{
         DiagnosticsOverlayPlugin,
         EnemySelectionScreenPlugin,
+        GameOverMenuPlugin,
         HudPlugin,
         MainMenuPlugin,
         PauseMenuPlugin,

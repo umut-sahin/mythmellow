@@ -1,6 +1,10 @@
 //! Leveling components.
 
-use mythmallow_core_dependencies::*;
+use {
+    crate::all::*,
+    mythmallow_core_constants::leveling::*,
+    mythmallow_core_dependencies::*,
+};
 
 
 /// Component for the level of the entities of the game.
@@ -47,5 +51,45 @@ impl Display for Experience {
         } else {
             write!(f, "{:.2}", self.0)
         }
+    }
+}
+
+
+/// Component for the experience points.
+#[derive(Clone, Component, Copy, Debug, Default, Reflect)]
+pub struct ExperiencePoint;
+
+
+/// Component for the visuals of the experience points.
+#[derive(Clone, Component, Debug, Reflect)]
+pub struct ExperiencePointVisuals {
+    /// Size of the experience point.
+    pub size: f32,
+    /// Color of the experience point.
+    pub color: Color,
+}
+
+impl Default for ExperiencePointVisuals {
+    fn default() -> ExperiencePointVisuals {
+        ExperiencePointVisuals {
+            size: DEFAULT_EXPERIENCE_POINT_SIZE,
+            color: DEFAULT_EXPERIENCE_POINT_COLOR,
+        }
+    }
+}
+
+
+/// Component for the attraction speed of the experience points.
+#[derive(Clone, Component, Debug, Deref, DerefMut, Reflect)]
+pub struct ExperiencePointAttractionSpeed(pub AttractionSpeed);
+
+impl Default for ExperiencePointAttractionSpeed {
+    fn default() -> ExperiencePointAttractionSpeed {
+        ExperiencePointAttractionSpeed(AttractionSpeed::Accelerating {
+            min_speed: Speed(DEFAULT_EXPERIENCE_POINT_MIN_SPEED),
+            acceleration_per_second: Speed(DEFAULT_EXPERIENCE_POINT_ACCELERATION_PER_SECOND),
+            current_speed: Speed(DEFAULT_EXPERIENCE_POINT_MIN_SPEED),
+            max_speed: Speed(DEFAULT_EXPERIENCE_POINT_MAX_SPEED),
+        })
     }
 }

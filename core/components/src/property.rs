@@ -39,6 +39,11 @@ pub struct DodgeChance(pub f32);
 pub struct Health(pub f32);
 
 
+/// Component for the pickup range of the entities of the game.
+#[derive(Clone, Copy, Component, Debug, Deref, DerefMut, Reflect)]
+pub struct PickupRange(pub f32);
+
+
 /// Component for the range of the entities of the game.
 #[derive(Clone, Copy, Component, Debug, Deref, DerefMut, Reflect)]
 pub struct Range(pub f32);

@@ -47,6 +47,11 @@ pub trait IPlayer: Debug + Send + Sync + 'static {
         Health(BASE_PLAYER_HEALTH)
     }
 
+    /// Gets the base pickup range of the player.
+    fn pickup_range(&self) -> PickupRange {
+        PickupRange(BASE_PLAYER_PICKUP_RANGE)
+    }
+
     /// Gets the base speed of the player.
     fn speed(&self) -> Speed {
         Speed(BASE_PLAYER_SPEED)

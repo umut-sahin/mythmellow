@@ -71,7 +71,11 @@ impl Plugin for CombatPlugin {
             );
             app.add_systems(
                 PostUpdate,
-                (player_death, enemy_death, despawn_projectiles_on_contact)
+                (
+                    player_death.run_if(god_mode_is_disabled),
+                    enemy_death,
+                    despawn_projectiles_on_contact,
+                )
                     .in_set(GameplaySystems::Combat),
             );
         }

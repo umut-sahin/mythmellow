@@ -7,6 +7,8 @@ edition = "2021"
 mythmallow-core-components = { path = "../components" }
 mythmallow-core-dependencies = { path = "../dependencies" }
 mythmallow-core-events = { path = "../events" }
+mythmallow-core-registries = { path = "../registries" }
+mythmallow-core-resources = { path = "../resources" }
 mythmallow-core-systems = { path = "../systems" }
 
 [features]
@@ -14,6 +16,8 @@ development = [
     "mythmallow-core-components/development",
     "mythmallow-core-dependencies/development",
     "mythmallow-core-events/development",
+    "mythmallow-core-registries/development",
+    "mythmallow-core-resources/development",
     "mythmallow-core-systems/development",
 ]
 

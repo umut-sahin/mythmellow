@@ -2,10 +2,14 @@ use {
     mythmallow_core_components::all::*,
     mythmallow_core_dependencies::*,
     mythmallow_core_events::all::*,
+    mythmallow_core_interfaces::*,
     mythmallow_core_resources::all::*,
     mythmallow_core_sets::*,
     mythmallow_core_states::*,
-    mythmallow_core_systems::leveling::*,
+    mythmallow_core_systems::{
+        leveling::*,
+        utility::remove_resource,
+    },
 };
 
 /// Plugin for managing the leveling of the entities of the game.
@@ -16,10 +20,14 @@ impl Plugin for LevelingPlugin {
         // Register resources.
         app.register_type::<ExperienceRequiredToGetToCurrentLevel>();
         app.register_type::<ExperienceRequiredToLevelUp>();
+        app.register_type::<ExperiencePointCounter>();
 
         // Register components.
         app.register_type::<Level>();
         app.register_type::<Experience>();
+        app.register_type::<ExperiencePoint>();
+        app.register_type::<ExperiencePointVisuals>();
+        app.register_type::<ExperiencePointAttractionSpeed>();
 
         // Add events.
         app.add_event::<ExperienceGainedEvent>();
@@ -29,6 +37,16 @@ impl Plugin for LevelingPlugin {
         app.add_systems(
             OnEnter(GameState::Initialization),
             initialize_player_level_structure.in_set(InitializationSystems::Leveling),
+        );
+        app.add_systems(
+            OnEnter(GameState::Loading),
+            initialize_experience_point_counter.in_set(LoadingSystems::Leveling),
+        );
+        app.add_systems(
+            Update,
+            (attract_experience_points, collect_experience_points)
+                .chain()
+                .in_set(GameplaySystems::Leveling),
         );
         app.add_systems(
             PostUpdate,
@@ -42,6 +60,14 @@ impl Plugin for LevelingPlugin {
             )
                 .chain(),
         );
-        app.add_systems(OnExit(InGame), deinitialize_player_level_structure);
+        app.add_systems(OnExit(InChapter), remove_resource::<ExperiencePointCounter>);
+        app.add_systems(
+            OnExit(InGame),
+            (
+                remove_resource::<ExperienceRequiredToGetToCurrentLevel>,
+                remove_resource::<ExperienceRequiredToLevelUp>,
+                remove_resource::<PlayerLevelStructure>,
+            ),
+        );
     }
 }

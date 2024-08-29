@@ -52,7 +52,7 @@ pub fn back_button() -> LocalizedText {
 
 
 /// Gets the localized text of the no modes title.
-pub fn menu_title_no_modes() -> LocalizedText {
+pub fn no_modes_menu_title() -> LocalizedText {
     LocalizedText::Localized {
         key: "ui-menu-title-no-modes",
         args: smallvec![],
@@ -61,7 +61,7 @@ pub fn menu_title_no_modes() -> LocalizedText {
 }
 
 /// Gets the localized text of the no players title.
-pub fn menu_title_no_players() -> LocalizedText {
+pub fn no_players_menu_title() -> LocalizedText {
     LocalizedText::Localized {
         key: "ui-menu-title-no-players",
         args: smallvec![],
@@ -70,7 +70,7 @@ pub fn menu_title_no_players() -> LocalizedText {
 }
 
 /// Gets the localized text of the no enemies title.
-pub fn menu_title_no_enemies() -> LocalizedText {
+pub fn no_enemies_menu_title() -> LocalizedText {
     LocalizedText::Localized {
         key: "ui-menu-title-no-enemies",
         args: smallvec![],
@@ -123,4 +123,37 @@ pub fn experience_bar(level: &Level) -> LocalizedText {
         args: smallvec![("level", format_smolstr!("{}", level.0))],
         fallback: format!("Level {}", level.0).into(),
     }
+}
+
+
+/// Gets the localized text of the won title.
+pub fn won_menu_title() -> LocalizedText {
+    LocalizedText::Localized {
+        key: "ui-menu-title-won",
+        args: smallvec![],
+        fallback: "You won!".into(),
+    }
+}
+
+/// Gets the localized text of the lost title.
+pub fn lost_menu_title() -> LocalizedText {
+    LocalizedText::Localized {
+        key: "ui-menu-title-lost",
+        args: smallvec![],
+        fallback: "You lost!".into(),
+    }
+}
+
+/// Gets the localized text of the play again buttons.
+pub fn play_again_button() -> LocalizedText {
+    LocalizedText::Localized {
+        key: "ui-play-again-button",
+        args: smallvec![],
+        fallback: "Play again".into(),
+    }
+}
+
+/// Gets the localized text of the retry buttons.
+pub fn retry_button() -> LocalizedText {
+    LocalizedText::Localized { key: "ui-retry-button", args: smallvec![], fallback: "Retry".into() }
 }

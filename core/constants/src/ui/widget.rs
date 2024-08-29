@@ -7,7 +7,7 @@ use mythmallow_core_dependencies::*;
 pub const MENU_TITLE_WIDTH: Val = Val::Percent(55.00);
 
 /// Height of the menu titles.
-pub const MENU_TITLE_HEIGHT: Val = Val::Percent(20.00);
+pub const MENU_TITLE_HEIGHT: Val = Val::Percent(10.00);
 
 /// Color of the menu titles.
 pub const MENU_TITLE_COLOR: Color = Color::srgb(1.00, 1.00, 1.00);

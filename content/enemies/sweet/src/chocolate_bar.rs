@@ -29,6 +29,9 @@ pub const PROJECTILE_COLOR: Color = Color::srgba(0.22, 0.10, 0.03, 1.00);
 /// Speed of the projectiles of the enemy.
 pub const PROJECTILE_SPEED: f32 = 200.00;
 
+/// Experience for defeating the enemy.
+pub const EXPERIENCE_REWARD: Experience = Experience(2.00);
+
 /// Component for the `chocolate-bar` enemy.
 #[derive(Clone, Component, Debug, Default, Reflect)]
 pub struct ChocolateBar;
@@ -52,6 +55,10 @@ impl IEnemy for ChocolateBar {
 
     fn speed(&self) -> Speed {
         SPEED
+    }
+
+    fn experience_reward(&self) -> Experience {
+        EXPERIENCE_REWARD
     }
 
     fn collider(&self) -> Collider {

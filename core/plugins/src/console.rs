@@ -35,8 +35,10 @@ impl Plugin for ConsolePlugin {
         );
 
         // Add commands.
-        app.add_console_command::<LocaleCommand, _>(LocaleCommand::handler);
-        app.add_console_command::<LevelCommand, _>(LevelCommand::handler);
         app.add_console_command::<ExperienceCommand, _>(ExperienceCommand::handler);
+        app.add_console_command::<GodModeCommand, _>(GodModeCommand::handler);
+        app.add_console_command::<InventoryCommand, _>(InventoryCommand::handler);
+        app.add_console_command::<LevelCommand, _>(LevelCommand::handler);
+        app.add_console_command::<LocaleCommand, _>(LocaleCommand::handler);
     }
 }

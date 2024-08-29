@@ -94,6 +94,70 @@ pub fn initialize_player_level_structure(world: &mut World) {
 }
 
 
+/// Initializes the experience point counter.
+pub fn initialize_experience_point_counter(mut commands: Commands) {
+    commands.insert_resource(ExperiencePointCounter::default());
+}
+
+
+/// Attracts the experience points inside player pickup area towards the player.
+pub fn attract_experience_points(
+    mut commands: Commands,
+    experience_point_query: Query<Entity, With<ExperiencePoint>>,
+    player_pickup_area_query: Query<&Parent, With<PlayerPickupArea>>,
+    player_query: Query<Entity, With<Player>>,
+    mut collision_started_event_reader: EventReader<CollisionStarted>,
+) {
+    let mut attract_if_applicable = |player_pickup_area_entity, experience_point_entity| {
+        let experience_point_entity = match experience_point_query.get(experience_point_entity) {
+            Ok(query_result) => query_result,
+            Err(_) => return,
+        };
+        let player_entity = match player_pickup_area_query.get(player_pickup_area_entity) {
+            Ok(parent) => player_query.get(parent.get()).unwrap(),
+            Err(_) => return,
+        };
+        commands.entity(experience_point_entity).insert(AttractedTo(player_entity));
+    };
+
+    for CollisionStarted(entity1, entity2) in collision_started_event_reader.read().cloned() {
+        attract_if_applicable(entity1, entity2);
+        attract_if_applicable(entity2, entity1);
+    }
+}
+
+/// Collects the experience points.
+pub fn collect_experience_points(
+    mut commands: Commands,
+    player_query: Query<&Player>,
+    experience_point_query: Query<(&Name, &Experience), (With<ExperiencePoint>, Without<Player>)>,
+    mut collision_started_event_reader: EventReader<CollisionStarted>,
+    mut experience_gained_event_writer: EventWriter<ExperienceGainedEvent>,
+) {
+    let mut collect_if_applicable = |player_entity, experience_point_entity| {
+        if player_query.get(player_entity).is_err() {
+            return;
+        }
+        let (experience_point_name, experience_reward) =
+            match experience_point_query.get(experience_point_entity) {
+                Ok(query_result) => query_result,
+                Err(_) => return,
+            };
+        experience_gained_event_writer.send(ExperienceGainedEvent {
+            entity: player_entity,
+            experience: *experience_reward,
+            by: format!("collecting \"{}\"", experience_point_name),
+        });
+        commands.entity(experience_point_entity).despawn_recursive();
+    };
+
+    for CollisionStarted(entity1, entity2) in collision_started_event_reader.read().cloned() {
+        collect_if_applicable(entity1, entity2);
+        collect_if_applicable(entity2, entity1);
+    }
+}
+
+
 /// Gains experience for the player.
 pub fn gain_player_experience(
     mut player_query: Query<&mut Experience, With<Player>>,
@@ -234,12 +298,4 @@ pub fn set_level(In(mut level): In<Level>, world: &mut World) {
             });
         }
     }
-}
-
-
-/// Deinitializes the player level structure.
-pub fn deinitialize_player_level_structure(mut commands: Commands) {
-    commands.remove_resource::<ExperienceRequiredToGetToCurrentLevel>();
-    commands.remove_resource::<ExperienceRequiredToLevelUp>();
-    commands.remove_resource::<PlayerLevelStructure>();
 }

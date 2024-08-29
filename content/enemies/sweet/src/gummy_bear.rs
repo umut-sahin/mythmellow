@@ -17,6 +17,9 @@ pub const CONTACT_DAMAGE: f32 = 3.00;
 /// Cooldown of the contact damage of the enemy.
 pub const CONTACT_DAMAGE_COOLDOWN: Duration = Duration::from_millis(1000);
 
+/// Experience for defeating the enemy.
+pub const EXPERIENCE_REWARD: Experience = Experience(3.00);
+
 /// Component for the `gummy-bear` enemy.
 #[derive(Clone, Component, Debug, Default, Reflect)]
 pub struct GummyBear;
@@ -44,6 +47,10 @@ impl IEnemy for GummyBear {
 
     fn speed(&self) -> Speed {
         SPEED
+    }
+
+    fn experience_reward(&self) -> Experience {
+        EXPERIENCE_REWARD
     }
 
     fn collider(&self) -> Collider {

@@ -3,5 +3,6 @@
 pub use crate::{
     combat::*,
     enemy::*,
+    leveling::*,
     player::*,
 };

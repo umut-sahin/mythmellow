@@ -19,6 +19,9 @@ pub enum LoadingSystems {
     /// Enemy systems.
     Enemy,
 
+    /// Leveling systems.
+    Leveling,
+
     /// Systems that run after everything else.
     Last,
 

@@ -22,6 +22,9 @@ pub enum GameplaySystems {
     /// Enemy systems.
     Enemy,
 
+    /// Leveling systems.
+    Leveling,
+
     /// Item systems.
     Item,
 

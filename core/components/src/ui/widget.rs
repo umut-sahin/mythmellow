@@ -56,6 +56,12 @@ impl WidgetSelected {
 }
 
 
+/// Component for the clicked widget.
+#[derive(Clone, Component, Debug)]
+#[component(storage = "SparseSet")]
+pub struct WidgetClicked;
+
+
 /// Component for the scaled font size of the texts.
 #[derive(Clone, Component, Debug, Reflect)]
 pub struct ScaledFontSize {

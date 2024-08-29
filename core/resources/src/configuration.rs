@@ -36,6 +36,9 @@ pub struct Arguments {
 
     /// Experience of the player to set when starting directly in game.
     pub start_in_game_experience: Option<f64>,
+
+    /// Whether to enable god mode.
+    pub enable_god_mode: bool,
 }
 
 impl Arguments {
@@ -96,6 +99,10 @@ impl Arguments {
             /// Specifies the experience of the player to set when starting directly in game.
             #[arg(long)]
             pub experience: Option<f64>,
+
+            /// Enables the god mode.
+            #[arg(long)]
+            pub god_mode: bool,
         }
 
         impl Default for ArgumentParser {
@@ -110,6 +117,7 @@ impl Arguments {
                     enemies: None,
                     level: None,
                     experience: None,
+                    god_mode: false,
                 }
             }
         }
@@ -142,6 +150,9 @@ impl Arguments {
                 }
                 if let Some(experience) = &self.experience {
                     write!(f, " --experience {}", Experience(*experience))?;
+                }
+                if self.god_mode {
+                    write!(f, " --god-mode")?;
                 }
                 Ok(())
             }
@@ -223,7 +234,7 @@ impl Arguments {
                     dirs::config_dir()
                         .map(|platform_config_dir| platform_config_dir.join("mythmallow"))
                         .unwrap_or_else(|| {
-                            panic!("fatal: unable to determine the configuration directory",);
+                            panic!("fatal: unable to determine the configuration directory");
                         })
                 }
                 #[cfg(target_family = "wasm")]
@@ -279,6 +290,7 @@ impl Arguments {
             start_in_game_enemies: parser.enemies,
             start_in_game_level: parser.level,
             start_in_game_experience: parser.experience,
+            enable_god_mode: parser.god_mode,
         };
         app.insert_resource(arguments);
     }

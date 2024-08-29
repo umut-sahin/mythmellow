@@ -24,6 +24,7 @@ impl Plugin for UiPlugin {
         app.add_plugins(EnemySelectionScreenPlugin);
         app.add_plugins(HudPlugin);
         app.add_plugins(PauseMenuPlugin);
+        app.add_plugins(GameOverMenuPlugin);
         app.add_plugins(DiagnosticsOverlayPlugin);
 
         // Add sickle ui plugin.
@@ -54,6 +55,9 @@ pub use hud::HudPlugin;
 
 mod pause_menu;
 pub use pause_menu::PauseMenuPlugin;
+
+mod game_over_menu;
+pub use game_over_menu::GameOverMenuPlugin;
 
 mod diagnostics_overlay;
 pub use diagnostics_overlay::DiagnosticsOverlayPlugin;

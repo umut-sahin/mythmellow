@@ -17,3 +17,9 @@ ui-return-to-main-menu-button = Return to main menu
 ui-quit-to-desktop-button = Quit to desktop
 
 ui-experience-bar = Level { $level }
+
+ui-menu-title-won = You won!
+ui-menu-title-lost = You lost!
+
+ui-play-again-button = Play again
+ui-retry-button = Retry

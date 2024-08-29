@@ -17,3 +17,9 @@ ui-return-to-main-menu-button = Ana menüye dön
 ui-quit-to-desktop-button = Oyunu kapat
 
 ui-experience-bar = { $level }. Seviye
+
+ui-menu-title-won = Oyunu kazandın!
+ui-menu-title-lost = Oyunu kaybettin!
+
+ui-play-again-button = Tekrar oyna
+ui-retry-button = Tekrar dene

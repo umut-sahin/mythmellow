@@ -29,3 +29,23 @@ impl PlayerHitBox {
         )
     }
 }
+
+
+/// Component for the pickup area of the player.
+#[derive(Component, Debug, Default, Reflect)]
+pub struct PlayerPickupArea;
+
+impl PlayerPickupArea {
+    /// Constructs a player pickup area bundle.
+    pub fn bundle(collider: Collider) -> impl Bundle {
+        (
+            // Tags
+            Name::new("Pickup Area"),
+            PlayerPickupArea,
+            // Physics
+            collider,
+            CollisionLayers::new([Layer::PlayerPickupArea], [Layer::ExperiencePoint]),
+            Sensor,
+        )
+    }
+}
