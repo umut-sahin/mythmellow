@@ -15,22 +15,9 @@ authors = [
 ]
 
 [dependencies]
-mythmallow-core-actions = { path = "core/actions" }
-mythmallow-core-assets = { path = "core/assets" }
-mythmallow-core-bundles = { path = "core/bundles" }
-mythmallow-core-commands = { path = "core/commands" }
-mythmallow-core-components = { path = "core/components" }
-mythmallow-core-constants = { path = "core/constants" }
+mythmallow-core-data = { path = "core/data" }
 mythmallow-core-dependencies = { path = "core/dependencies" }
-mythmallow-core-events = { path = "core/events" }
-mythmallow-core-interfaces = { path = "core/interfaces" }
-mythmallow-core-localizations = { path = "core/localizations" }
-mythmallow-core-plugins = { path = "core/plugins" }
-mythmallow-core-registries = { path = "core/registries" }
-mythmallow-core-resources = { path = "core/resources" }
-mythmallow-core-sets = { path = "core/sets" }
-mythmallow-core-states = { path = "core/states" }
-mythmallow-core-systems = { path = "core/systems" }
+mythmallow-core-logic = { path = "core/logic" }
 mythmallow-enemies-sweet = { path = "content/enemies/sweet" }
 mythmallow-items-greek = { path = "content/items/greek" }
 mythmallow-mode-survival = { path = "content/modes/survival" }
@@ -39,22 +26,9 @@ mythmallow-players-greek = { path = "content/players/greek" }
 [features]
 default = ["development"]
 development = [
-    "mythmallow-core-actions/development",
-    "mythmallow-core-assets/development",
-    "mythmallow-core-bundles/development",
-    "mythmallow-core-commands/development",
-    "mythmallow-core-components/development",
-    "mythmallow-core-constants/development",
+    "mythmallow-core-data/development",
     "mythmallow-core-dependencies/development",
-    "mythmallow-core-events/development",
-    "mythmallow-core-interfaces/development",
-    "mythmallow-core-localizations/development",
-    "mythmallow-core-plugins/development",
-    "mythmallow-core-registries/development",
-    "mythmallow-core-resources/development",
-    "mythmallow-core-sets/development",
-    "mythmallow-core-states/development",
-    "mythmallow-core-systems/development",
+    "mythmallow-core-logic/development",
     "mythmallow-enemies-sweet/development",
     "mythmallow-items-greek/development",
     "mythmallow-mode-survival/development",
@@ -64,22 +38,9 @@ development = [
 [workspace]
 resolver = "2"
 members = [
-    "core/actions",
-    "core/assets",
-    "core/bundles",
-    "core/commands",
-    "core/components",
-    "core/constants",
+    "core/data",
     "core/dependencies",
-    "core/events",
-    "core/interfaces",
-    "core/localizations",
-    "core/plugins",
-    "core/registries",
-    "core/resources",
-    "core/sets",
-    "core/states",
-    "core/systems",
+    "core/logic",
     "content/enemies/sweet",
     "content/items/greek",
     "content/modes/survival",

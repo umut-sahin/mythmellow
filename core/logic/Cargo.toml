@@ -1,0 +1,17 @@
+[package]
+name = "mythmallow-core-logic"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+mythmallow-core-data = { path = "../data" }
+mythmallow-core-dependencies = { path = "../dependencies" }
+
+[features]
+development = [
+    "mythmallow-core-data/development",
+    "mythmallow-core-dependencies/development",
+]
+
+[lints]
+workspace = true

@@ -9,9 +9,9 @@ use mythmallow::{
         players::greek::prelude::*,
     },
     core::{
-        dependencies::*,
-        plugins::*,
-        registries::all::*,
+        data::prelude::*,
+        dependencies::prelude::*,
+        logic::prelude::*,
     },
 };
 
@@ -72,7 +72,7 @@ fn main() -> AppExit {
     #[cfg(not(target_family = "wasm"))]
     {
         // Use core resources.
-        use mythmallow::core::resources::all::*;
+        use mythmallow::core::data::resources::all::*;
 
         // Find the primary window entity.
         let primary_window_entity = app
@@ -182,6 +182,7 @@ fn core(app: &mut App) {
     app.add_plugins(ModePlugin);
     app.add_plugins(ItemPlugin);
     app.add_plugins(InventoryPlugin);
+    app.add_plugins(MarketPlugin);
     app.add_plugins(PlayerPlugin);
     app.add_plugins(EnemyPlugin);
     app.add_plugins(UiPlugin);

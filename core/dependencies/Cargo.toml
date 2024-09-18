@@ -18,6 +18,7 @@ fluent = { version = "0.16" }
 fluent_content = { version = "0.0" }
 leafwing-input-manager = { git = "https://github.com/Leafwing-Studios/leafwing-input-manager", rev = "d328836" }
 level-adjusted-log = { package = "log", version = "0.4", features = ["max_level_info", "release_max_level_info"] }
+prettytable = { version = "0.10" }
 rand = { version = "0.8" }
 serde = { version = "1.0", features = ["derive"] }
 sickle_ui = { version = "0.2" }

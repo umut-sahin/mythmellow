@@ -4,24 +4,14 @@ version = "0.0.0"
 edition = "2021"
 
 [dependencies]
-mythmallow-core-actions = { path = "../../../core/actions" }
-mythmallow-core-bundles = { path = "../../../core/bundles" }
-mythmallow-core-components = { path = "../../../core/components" }
+mythmallow-core-data = { path = "../../../core/data" }
 mythmallow-core-dependencies = { path = "../../../core/dependencies" }
-mythmallow-core-interfaces = { path = "../../../core/interfaces" }
-mythmallow-core-registries = { path = "../../../core/registries" }
-mythmallow-core-resources = { path = "../../../core/resources" }
 mythmallow-items-greek = { path = "../../items/greek" }
 
 [features]
 development = [
-    "mythmallow-core-actions/development",
-    "mythmallow-core-bundles/development",
-    "mythmallow-core-components/development",
+    "mythmallow-core-data/development",
     "mythmallow-core-dependencies/development",
-    "mythmallow-core-interfaces/development",
-    "mythmallow-core-registries/development",
-    "mythmallow-core-resources/development",
     "mythmallow-items-greek/development",
 ]
 

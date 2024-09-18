@@ -89,6 +89,10 @@ impl IGameMode for Survival {
         EnemySpawnPattern::new(spawns)
     }
 
+    fn market_can_be_opened_by_player(&self) -> bool {
+        true
+    }
+
     fn initialize(&self, world: &mut World) {
         world.init_resource::<GameMode<Survival>>();
     }

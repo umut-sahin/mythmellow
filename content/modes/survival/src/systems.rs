@@ -154,7 +154,7 @@ pub fn spawn_map(mut commands: Commands) {
     commands
         .spawn((Name::new("Map"), Map, StateScoped(InChapter), SpatialBundle::default()))
         .with_children(|parent| {
-            // Spawn horizontal lines.
+            // Spawn the horizontal lines.
             for i in 0..=GRID_SIZE {
                 parent.spawn((
                     Name::new(format!("Horizontal Line {}", i + 1)),
@@ -176,7 +176,7 @@ pub fn spawn_map(mut commands: Commands) {
                     },
                 ));
             }
-            // Spawn vertical lines.
+            // Spawn the vertical lines.
             for i in 0..=GRID_SIZE {
                 parent.spawn((
                     Name::new(format!("Vertical Line {}", i + 1)),
@@ -248,6 +248,7 @@ pub fn win(
 
         game_state_stack.pop();
         game_state_stack.push(GameState::Loading);
+        game_state_stack.push(GameState::Market);
 
         if let Ok((mut player_position, mut player_remaining_health, player_health)) =
             player_query.get_single_mut()

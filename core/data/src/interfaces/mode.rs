@@ -1,0 +1,28 @@
+//! Game mode interfaces.
+
+use crate::prelude::*;
+
+/// Interface for the game modes.
+pub trait IGameMode: Debug + Send + Sync + 'static {
+    /// Gets the unique identifier of the game mode.
+    fn id(&self) -> SmolStr;
+
+    /// Gets the localized name of the game mode.
+    fn name(&self) -> LocalizedText;
+
+
+    /// Gets the player level structure of the game mode.
+    fn player_level_structure(&self) -> PlayerLevelStructure;
+
+    /// Gets the default enemy spawn pattern of the game mode.
+    fn default_enemy_spawn_pattern(&self, world: &World) -> EnemySpawnPattern;
+
+    /// Gets whether the market can be opened by the player in the game mode.
+    fn market_can_be_opened_by_player(&self) -> bool;
+
+    /// Initializes the game mode.
+    fn initialize(&self, world: &mut World);
+
+    /// Deinitializes the game mode.
+    fn deinitialize(&self, world: &mut World);
+}

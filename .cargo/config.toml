@@ -7,7 +7,7 @@ rustflags = [
 [target.x86_64-pc-windows-msvc]
 linker = "rust-lld.exe"
 rustflags = [
-    "-Zshare-generics=n",
+    "-Zshare-generics=y",
     "-Zthreads=0",
 ]
 

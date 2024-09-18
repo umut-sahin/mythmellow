@@ -24,6 +24,9 @@ pub const BASE_ATTACK_DURATION: Duration = Duration::from_millis(240);
 /// Base cooldown duration of the attacks with the item.
 pub const BASE_ATTACK_COOLDOWN: Duration = Duration::from_millis(900);
 
+/// Base price of the item.
+pub const BASE_PRICE: Balance = Balance(20.00);
+
 /// Component for the `bident-of-hades` item.
 #[derive(Clone, Component, Debug, Default, Reflect)]
 pub struct BidentOfHades;
@@ -47,6 +50,10 @@ impl IItem for BidentOfHades {
 
     fn base_range(&self) -> Option<Range> {
         Some(BASE_RANGE)
+    }
+
+    fn base_price(&self) -> Balance {
+        BASE_PRICE
     }
 
     fn instantiate(&self) -> ItemInstance {

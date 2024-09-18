@@ -27,7 +27,10 @@ pub const PROJECTILE_SIZE: f32 = 3.00;
 pub const PROJECTILE_COLOR: Color = Color::srgb(0.25, 0.25, 0.25);
 
 /// Base speed of the projectiles of the item.
-pub const BASE_PROJECTILE_SPEED: f32 = 200.00;
+pub const BASE_PROJECTILE_SPEED: f32 = 400.00;
+
+/// Base price of the item.
+pub const BASE_PRICE: Balance = Balance(25.00);
 
 /// Component for the `bow-of-artemis` item.
 #[derive(Clone, Component, Debug, Default, Reflect)]
@@ -52,6 +55,10 @@ impl IItem for BowOfArtemis {
 
     fn base_range(&self) -> Option<Range> {
         Some(BASE_RANGE)
+    }
+
+    fn base_price(&self) -> Balance {
+        BASE_PRICE
     }
 
     fn instantiate(&self) -> ItemInstance {

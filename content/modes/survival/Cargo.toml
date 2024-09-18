@@ -4,25 +4,13 @@ version = "0.0.0"
 edition = "2021"
 
 [dependencies]
-mythmallow-core-components = { path = "../../../core/components" }
-mythmallow-core-constants = { path = "../../../core/constants" }
+mythmallow-core-data = { path = "../../../core/data" }
 mythmallow-core-dependencies = { path = "../../../core/dependencies" }
-mythmallow-core-interfaces = { path = "../../../core/interfaces" }
-mythmallow-core-registries = { path = "../../../core/registries" }
-mythmallow-core-resources = { path = "../../../core/resources" }
-mythmallow-core-sets = { path = "../../../core/sets" }
-mythmallow-core-states = { path = "../../../core/states" }
 
 [features]
 development = [
-    "mythmallow-core-components/development",
-    "mythmallow-core-constants/development",
+    "mythmallow-core-data/development",
     "mythmallow-core-dependencies/development",
-    "mythmallow-core-interfaces/development",
-    "mythmallow-core-registries/development",
-    "mythmallow-core-resources/development",
-    "mythmallow-core-sets/development",
-    "mythmallow-core-states/development",
 ]
 
 [lints]

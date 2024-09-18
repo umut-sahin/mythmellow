@@ -1,0 +1,18 @@
+[package]
+name = "mythmallow-core-data"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+mythmallow-core-dependencies = { path = "../dependencies" }
+serde = { version = "1.0", features = ["derive"] }
+strum = { version = "0.26" }
+strum_macros = { version = "0.26" }
+
+[features]
+development = [
+    "mythmallow-core-dependencies/development",
+]
+
+[lints]
+workspace = true
