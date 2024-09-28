@@ -52,16 +52,13 @@ fn main() -> AppExit {
         // Overwrite editor controls.
         let mut editor_controls = EditorControls::default_bindings();
         editor_controls.unbind(EditorAction::PlayPauseEditor);
-        editor_controls.insert(
-            EditorAction::PlayPauseEditor,
-            EditorBinding {
-                input: EditorUserInput::Chord(vec![
-                    EditorButton::Keyboard(KeyCode::ControlLeft),
-                    EditorButton::Keyboard(KeyCode::KeyE),
-                ]),
-                conditions: vec![EditorBindingCondition::ListeningForText(false)],
-            },
-        );
+        editor_controls.insert(EditorAction::PlayPauseEditor, EditorBinding {
+            input: EditorUserInput::Chord(vec![
+                EditorButton::Keyboard(KeyCode::ControlLeft),
+                EditorButton::Keyboard(KeyCode::KeyE),
+            ]),
+            conditions: vec![EditorBindingCondition::ListeningForText(false)],
+        });
         app.insert_resource(editor_controls);
     }
 
@@ -157,6 +154,19 @@ fn main() -> AppExit {
             if number_of_items == 1 { "" } else { "s" },
             if number_of_items == 1 { "is" } else { "are" },
         );
+    }
+
+    // Record the session to be debugged with rerun.
+    #[cfg(feature = "rerun")]
+    {
+        match RecordingStreamBuilder::new("mythmallow").spawn() {
+            Ok(recorder) => {
+                app.add_plugins(RerunPlugin { rec: recorder });
+            },
+            Err(error) => {
+                log::error!("unable to setup recording for rerun ({})", error);
+            },
+        }
     }
 
     // Start the application.

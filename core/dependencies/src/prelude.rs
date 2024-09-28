@@ -4,20 +4,20 @@
 pub use {
     avian2d::{
         self,
+        PhysicsPlugins as AvianPlugin,
         math::*,
         prelude::*,
-        PhysicsPlugins as AvianPlugin,
     },
     bevy::{
         self,
         asset::{
             self as bevy_asset,
-            io::Reader,
             AssetLoader,
             AsyncReadExt,
             LoadContext,
             LoadState,
             LoadedFolder,
+            io::Reader,
         },
         diagnostic::{
             DiagnosticsStore,
@@ -47,9 +47,9 @@ pub use {
         render::{
             self as bevy_render,
             render_resource::{
-                encase,
                 AsBindGroup,
                 ShaderRef,
+                encase,
             },
         },
         sprite::MaterialMesh2dBundle,
@@ -64,13 +64,13 @@ pub use {
     },
     bevy_console::{
         self,
-        reply,
         AddConsoleCommand,
         ConsoleCommand,
         ConsoleConfiguration,
         ConsoleOpen as ConsoleState,
         ConsolePlugin as BevyConsolePlugin,
         ConsoleSet,
+        reply,
     },
     bevy_easings::{
         self,
@@ -84,8 +84,8 @@ pub use {
     },
     bevy_fluent::{
         self,
-        prelude::*,
         ResourceAsset,
+        prelude::*,
     },
     bevy_persistent::{
         self,
@@ -111,9 +111,9 @@ pub use {
     },
     fluent::{
         self,
-        bundle::FluentBundle,
         FluentArgs,
         FluentResource,
+        bundle::FluentBundle,
     },
     fluent_content::{
         self,
@@ -126,8 +126,8 @@ pub use {
     },
     prettytable::{
         self,
-        row,
         Table,
+        row,
     },
     rand::{
         self,
@@ -140,17 +140,17 @@ pub use {
     },
     sickle_ui::{
         self,
-        prelude::*,
         SickleUiPlugin,
+        prelude::*,
     },
     smallvec::{
-        smallvec,
         SmallVec,
+        smallvec,
     },
     smol_str::{
         self,
-        format_smolstr,
         SmolStr,
+        format_smolstr,
     },
     std::{
         any::Any,
@@ -163,8 +163,8 @@ pub use {
         },
         marker::PhantomData,
         num::{
-            NonZeroU16,
             NonZeroU8,
+            NonZeroU16,
             NonZeroUsize,
         },
         ops::{
@@ -177,12 +177,12 @@ pub use {
             PathBuf,
         },
         sync::{
+            Arc,
+            Mutex,
             atomic::{
                 AtomicBool,
                 Ordering as AtomicOrdering,
             },
-            Arc,
-            Mutex,
         },
         time::Duration,
     },
@@ -257,4 +257,11 @@ pub use bevy_editor_pls::{
     },
     editor::Editor,
     prelude::*,
+};
+
+#[cfg(feature = "rerun")]
+pub use revy::{
+    self,
+    RecordingStreamBuilder,
+    RerunPlugin,
 };

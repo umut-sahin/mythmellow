@@ -34,6 +34,9 @@ development = [
     "mythmallow-mode-survival/development",
     "mythmallow-players-greek/development",
 ]
+rerun = [
+    "mythmallow-core-dependencies/rerun",
+]
 
 [workspace]
 resolver = "2"
